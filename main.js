@@ -7,28 +7,26 @@ const ASSETS = {
   startBg: "assets/start_bg.png",
   btnEnter: "assets/btn_enter.png",
   btnHow: "assets/btn_howtoplay.png",
-
-  // optional later: create a map background in Canva and name it this:
   mapBg: "assets/map_bg.png",
+
+  // Character SVGs
+  gnomeBody: "assets/gnome_body.svg",
+  gnomeHat: "assets/gnome_hat.svg",
+  fairyGirl: "assets/fairy_girl.svg",
+  fairyWings: "assets/fairy_wings.svg",
 };
 
-const SAVE_KEY = "woodlandSave_v1";
+const SAVE_KEY = "woodlandSave_v2_svg";
 
 const state = {
   soundOn: true,
   step: "start", // start | how | map
 
-  // Character design that must persist across all levels:
   character: {
-    type: "gnome",       // gnome | fairy
-    hair: "#ff6aa6",
-    skin: "#ffd6b3",
-    eyes: "#16323a",
-    clothes: "#2fd38c",
+    type: "gnome",     // gnome | fairy
+    hatColor: "#ff3b87",
+    wingColor: "#7b5cff",
   },
-
-  // You’ll add more later:
-  unlockedLevels: { 1: true },
 };
 
 /* ---------- SAVE SYSTEM ---------- */
@@ -38,32 +36,23 @@ function saveGame() {
 
 function loadGame() {
   const saved = localStorage.getItem(SAVE_KEY);
-  if (saved) {
-    try {
-      const parsed = JSON.parse(saved);
-      // Merge safely so future additions don’t break older saves
-      Object.assign(state, parsed);
-      state.character = { ...state.character, ...(parsed.character || {}) };
-      state.unlockedLevels = { ...state.unlockedLevels, ...(parsed.unlockedLevels || {}) };
-    } catch {
-      // ignore broken saves
-    }
-  }
+  if (!saved) return;
+  try {
+    const parsed = JSON.parse(saved);
+    Object.assign(state, parsed);
+    state.character = { ...state.character, ...(parsed.character || {}) };
+  } catch {}
 }
 
 function resetGame() {
   localStorage.removeItem(SAVE_KEY);
-  // reset state (keep defaults)
   state.soundOn = true;
   state.step = "start";
   state.character = {
     type: "gnome",
-    hair: "#ff6aa6",
-    skin: "#ffd6b3",
-    eyes: "#16323a",
-    clothes: "#2fd38c",
+    hatColor: "#ff3b87",
+    wingColor: "#7b5cff",
   };
-  state.unlockedLevels = { 1: true };
   render();
 }
 
@@ -78,17 +67,16 @@ function playClick() {
   } catch {}
 }
 
-/* ---------- RENDER ROUTER ---------- */
+/* ---------- ROUTER ---------- */
 function render() {
   if (state.step === "start") return renderStart();
   if (state.step === "how") return renderHow();
   if (state.step === "map") return renderMap();
-  // fallback
   state.step = "start";
   return renderStart();
 }
 
-/* ---------- START SCREEN ---------- */
+/* ---------- START ---------- */
 function renderStart() {
   screen.innerHTML = `
     <div class="start-screen" style="background-image:url('${ASSETS.startBg}')">
@@ -119,7 +107,7 @@ function renderStart() {
   });
 }
 
-/* ---------- HOW TO PLAY ---------- */
+/* ---------- HOW ---------- */
 function renderHow() {
   screen.innerHTML = `
     <div class="how-screen" style="background-image:url('${ASSETS.startBg}')">
@@ -132,23 +120,15 @@ function renderHow() {
         <div class="how-grid">
           <div class="how-step">
             <div class="how-icon">👣</div>
-            <div><h3>Enter the Forest</h3><p>Go to the Forest Map hub to set your character and choose trails.</p></div>
+            <div><h3>Enter the Forest</h3><p>Go to the Forest Map hub to choose your guide and trails.</p></div>
           </div>
           <div class="how-step">
             <div class="how-icon">🔍</div>
-            <div><h3>Observe</h3><p>Scenes have nature choices—plants, clouds, forest-floor finds.</p></div>
-          </div>
-          <div class="how-step">
-            <div class="how-icon">🖱️</div>
-            <div><h3>Choose</h3><p>Click the correct item to earn treasures.</p></div>
+            <div><h3>Observe</h3><p>Each scene has nature choices—flowers, clouds, forest-floor finds.</p></div>
           </div>
           <div class="how-step">
             <div class="how-icon">🧰</div>
-            <div><h3>Collect</h3><p>Your treasures stay in your chest for decorating later.</p></div>
-          </div>
-          <div class="how-step">
-            <div class="how-icon">🪵</div>
-            <div><h3>Decorate</h3><p>Use treasures to decorate your gnome hut or fairy house.</p></div>
+            <div><h3>Collect</h3><p>Earn treasures and decorate your home later.</p></div>
           </div>
           <div class="how-step">
             <div class="how-icon">🌿</div>
@@ -179,14 +159,10 @@ function renderHow() {
   });
 }
 
-/* ---------- FOREST MAP (HUB) ---------- */
+/* ---------- MAP / CHARACTER HUB ---------- */
 function renderMap() {
-  // If map_bg.png doesn't exist yet, the CSS will still show a color background.
-  // You can add assets/map_bg.png later and it will appear automatically.
-  const bg = ASSETS.mapBg;
-
   screen.innerHTML = `
-    <div class="map-screen" style="background-image:url('${bg}')">
+    <div class="map-screen" style="background-image:url('${ASSETS.mapBg}')">
       <div class="map-overlay"></div>
 
       <div class="map-top">
@@ -196,10 +172,9 @@ function renderMap() {
       </div>
 
       <div class="map-layout">
-        <!-- LEFT: Character Design -->
         <div class="panel">
           <div class="panel-title">Choose Your Guide</div>
-          <div class="panel-sub">This character will be used across all levels.</div>
+          <div class="panel-sub">Your guide stays the same across all levels.</div>
 
           <div class="char-row">
             <button class="char-type ${state.character.type === "gnome" ? "active" : ""}" id="typeGnome" type="button">Gnome</button>
@@ -207,45 +182,36 @@ function renderMap() {
           </div>
 
           <div class="avatar-preview" aria-label="Character preview">
-            ${renderAvatarPreview()}
+            <div class="svg-avatar" id="svgAvatar">
+              <div class="svg-slot" id="slotBack"></div>
+              <div class="svg-slot" id="slotFront"></div>
+            </div>
           </div>
 
-          <div class="color-grid" aria-label="Color pickers">
-            ${colorPicker("Hair", "hair", state.character.hair)}
-            ${colorPicker("Skin", "skin", state.character.skin)}
-            ${colorPicker("Eyes", "eyes", state.character.eyes)}
-            ${colorPicker("Clothes", "clothes", state.character.clothes)}
-          </div>
+          <div class="pick-area" id="pickArea"></div>
 
           <div class="panel-actions">
-            <button class="map-btn" id="randomBtn" type="button">Surprise Colors</button>
             <button class="map-btn primary" id="useCharacterBtn" type="button">Use This Character</button>
           </div>
 
-          <div class="tiny-note">Auto-saves as you edit (and you can press Save too).</div>
+          <div class="tiny-note">Auto-saves as you change color.</div>
         </div>
 
-        <!-- RIGHT: Trails/Levels (placeholder buttons for now) -->
         <div class="panel">
           <div class="panel-title">Trails</div>
-          <div class="panel-sub">Your levels will live here (on the map).</div>
+          <div class="panel-sub">Next we’ll place clickable level buttons on your map.</div>
 
           <div class="trail-grid">
             <button class="trail-btn" id="level1Btn" type="button">Level 1</button>
             <button class="trail-btn locked" type="button" disabled>Level 2</button>
             <button class="trail-btn locked" type="button" disabled>Level 3</button>
-            <button class="trail-btn locked" type="button" disabled>Potions</button>
-            <button class="trail-btn locked" type="button" disabled>Foraging</button>
-            <button class="trail-btn locked" type="button" disabled>Cloud Watch</button>
           </div>
-
-          <div class="tiny-note">Next: we’ll make Level 1 actually launch from here.</div>
         </div>
       </div>
     </div>
   `;
 
-  // Wire buttons
+  // Top buttons
   document.getElementById("mapHomeBtn").addEventListener("click", () => {
     playClick();
     state.step = "start";
@@ -259,11 +225,12 @@ function renderMap() {
     alert("Saved!");
   });
 
+  // Character type
   document.getElementById("typeGnome").addEventListener("click", () => {
     playClick();
     state.character.type = "gnome";
     saveGame();
-    render(); // re-render to update preview + active state
+    render();
   });
 
   document.getElementById("typeFairy").addEventListener("click", () => {
@@ -273,99 +240,138 @@ function renderMap() {
     render();
   });
 
-  // Color pickers
-  ["hair", "skin", "eyes", "clothes"].forEach((key) => {
-    const el = document.getElementById(`pick-${key}`);
-    el.addEventListener("input", (e) => {
-      state.character[key] = e.target.value;
+  // Apply correct picker UI
+  const pickArea = document.getElementById("pickArea");
+  if (state.character.type === "gnome") {
+    pickArea.innerHTML = `
+      <div class="pick-row">
+        <label for="pick-hat">Hat Color</label>
+        <input id="pick-hat" type="color" value="${escapeHtml(state.character.hatColor)}" />
+      </div>
+    `;
+    document.getElementById("pick-hat").addEventListener("input", (e) => {
+      state.character.hatColor = e.target.value;
       saveGame();
-      // Update preview without full rerender
-      const preview = document.querySelector(".avatar-preview");
-      if (preview) preview.innerHTML = renderAvatarPreview();
+      applySvgColors();
     });
-  });
-
-  document.getElementById("randomBtn").addEventListener("click", () => {
-    playClick();
-    state.character.hair = randomColor();
-    state.character.skin = randomSkin();
-    state.character.eyes = randomColor();
-    state.character.clothes = randomColor();
-    saveGame();
-    render();
-  });
+  } else {
+    pickArea.innerHTML = `
+      <div class="pick-row">
+        <label for="pick-wing">Wing Color</label>
+        <input id="pick-wing" type="color" value="${escapeHtml(state.character.wingColor)}" />
+      </div>
+    `;
+    document.getElementById("pick-wing").addEventListener("input", (e) => {
+      state.character.wingColor = e.target.value;
+      saveGame();
+      applySvgColors();
+    });
+  }
 
   document.getElementById("useCharacterBtn").addEventListener("click", () => {
     playClick();
     saveGame();
-    alert("Character saved! 🌲");
+    alert("Character saved! 🌲✨");
   });
 
   document.getElementById("level1Btn").addEventListener("click", () => {
     playClick();
-    // placeholder — next we’ll connect your Level 1 game here
-    alert("Level 1 will launch from the map next 🌲");
+    alert("Next: we’ll launch Level 1 from here.");
+  });
+
+  // Load + inline SVGs
+  loadCharacterSvgs().catch((err) => {
+    console.error(err);
+    alert("SVG load error. Check that your SVG filenames match exactly in /assets.");
   });
 }
 
-/* ---------- UI HELPERS ---------- */
+/* ---------- SVG LOADING + COLORING ---------- */
 
-function colorPicker(label, key, value) {
-  return `
-    <div class="pick-row">
-      <label for="pick-${key}">${label}</label>
-      <input id="pick-${key}" type="color" value="${escapeHtml(value)}" />
-    </div>
-  `;
+async function loadCharacterSvgs() {
+  const slotBack = document.getElementById("slotBack");
+  const slotFront = document.getElementById("slotFront");
+  if (!slotBack || !slotFront) return;
+
+  slotBack.innerHTML = "";
+  slotFront.innerHTML = "";
+
+  if (state.character.type === "gnome") {
+    // Body (fixed) behind, Hat (colorable) on top
+    const body = await fetchSvgInline(ASSETS.gnomeBody, "gnome-body");
+    const hat = await fetchSvgInline(ASSETS.gnomeHat, "gnome-hat");
+    slotBack.appendChild(body);
+    slotFront.appendChild(hat);
+  } else {
+    // Wings behind, Girl silhouette on top
+    const wings = await fetchSvgInline(ASSETS.fairyWings, "fairy-wings");
+    const girl = await fetchSvgInline(ASSETS.fairyGirl, "fairy-girl");
+    slotBack.appendChild(wings);
+    slotFront.appendChild(girl);
+  }
+
+  applySvgColors();
 }
 
-function renderAvatarPreview() {
-  const c = state.character;
-  const isFairy = c.type === "fairy";
+async function fetchSvgInline(url, className) {
+  const res = await fetch(url, { cache: "no-store" });
+  if (!res.ok) throw new Error(`Failed to fetch SVG: ${url}`);
+  const text = await res.text();
 
-  // Simple “paper doll” style preview with pure HTML/CSS colors.
-  // Later you can swap this with your Canva layered art and keep the same state values.
-  return `
-    <div class="avatar">
-      ${isFairy ? `<div class="wings"></div>` : `<div class="hat" style="background:${c.hair}"></div>`}
-      <div class="hair" style="background:${c.hair}"></div>
-      <div class="head" style="background:${c.skin}">
-        <div class="eyes">
-          <span class="eye" style="background:${c.eyes}"></span>
-          <span class="eye" style="background:${c.eyes}"></span>
-        </div>
-        <div class="smile"></div>
-      </div>
-      <div class="body" style="background:${c.clothes}"></div>
-      <div class="tag">${isFairy ? "Fairy" : "Gnome"}</div>
-    </div>
-  `;
+  // Parse as DOM, return the <svg> element
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(text, "image/svg+xml");
+  const svg = doc.querySelector("svg");
+  if (!svg) throw new Error(`No <svg> tag found in: ${url}`);
+
+  svg.classList.add("inline-svg");
+  if (className) svg.classList.add(className);
+
+  // Make it scale nicely
+  svg.setAttribute("width", "100%");
+  svg.setAttribute("height", "100%");
+  svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
+
+  return svg;
 }
 
+function applySvgColors() {
+  const hatSvg = document.querySelector(".gnome-hat");
+  if (hatSvg) {
+    setSvgFill(hatSvg, state.character.hatColor);
+  }
+
+  const wingSvg = document.querySelector(".fairy-wings");
+  if (wingSvg) {
+    setSvgFill(wingSvg, state.character.wingColor);
+  }
+}
+
+/**
+ * Sets fill color on all SVG shapes that can take fill.
+ * Tip: If your SVG paths are using stroke only, we can also set stroke.
+ */
+function setSvgFill(svgEl, color) {
+  const nodes = svgEl.querySelectorAll("path, circle, rect, polygon, ellipse");
+  nodes.forEach((n) => {
+    // Only override if it isn't explicitly "none"
+    const current = (n.getAttribute("fill") || "").toLowerCase();
+    if (current !== "none") n.setAttribute("fill", color);
+
+    // If your hat/wings are stroke-only, uncomment:
+    // const stroke = (n.getAttribute("stroke") || "").toLowerCase();
+    // if (stroke !== "none") n.setAttribute("stroke", color);
+  });
+}
+
+/* ---------- UTIL ---------- */
 function escapeHtml(str) {
-  return String(str).replace(/[&<>"']/g, (m) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[m]));
-}
-
-function randomColor() {
-  // bright-ish random
-  const r = 80 + Math.floor(Math.random() * 175);
-  const g = 80 + Math.floor(Math.random() * 175);
-  const b = 80 + Math.floor(Math.random() * 175);
-  return rgbToHex(r, g, b);
-}
-
-function randomSkin() {
-  const skins = ["#ffd6b3", "#f7c6a3", "#e9b58f", "#d79c79", "#c98766", "#b17355", "#9a5f48"];
-  return skins[Math.floor(Math.random() * skins.length)];
-}
-
-function rgbToHex(r, g, b) {
-  const to = (n) => n.toString(16).padStart(2, "0");
-  return `#${to(r)}${to(g)}${to(b)}`;
+  return String(str).replace(/[&<>"']/g, (m) => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+  }[m]));
 }
 
 /* ---------- TOP BUTTON EVENTS ---------- */
-
 soundBtn.addEventListener("click", () => {
   state.soundOn = !state.soundOn;
   saveGame();
