@@ -363,3 +363,20 @@ body {
   object-fit: contain; /* change to cover if you want edge-to-edge crop */
   display: block;
 }
+.map-frame {
+  width: 100%;
+  height: 420px;
+  border-radius: 18px;
+  background: rgba(255,255,255,0.65);
+  border: 1px dashed rgba(0,0,0,0.18);
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+}
+
+.map-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
