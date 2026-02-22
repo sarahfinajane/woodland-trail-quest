@@ -61,7 +61,7 @@ body {
 .level-column {
   position: absolute;
   left: 90px;     /* adjust left/right if needed */
-  top: 340px;     /* adjust up/down if needed */
+  top: 320px;     /* adjust up/down if needed */
   display: flex;
   flex-direction: column;
   gap: 12px;
