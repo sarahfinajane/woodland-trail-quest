@@ -171,8 +171,7 @@ function renderMap() {
         <!-- RIGHT PANEL WITH YOUR MAP -->
         <div class="panel">
           <div class="panel-title">Forest Map</div>
-          <div class="panel-sub">Click places on the map to choose a trail.</div>
-
+          
           <div class="map-frame">
             <img src="assets/bkg_map.png" class="map-img">
           </div>
