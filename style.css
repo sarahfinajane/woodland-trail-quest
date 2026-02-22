@@ -344,3 +344,22 @@ body {
   .char-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .char-card img { height: 60px; }
 }
+/* --- RIGHT MAP ART PANEL --- */
+
+.map-art-panel {
+  padding: 0;
+  overflow: hidden;
+}
+
+.map-art-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.map-art-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain; /* change to cover if you want edge-to-edge crop */
+  display: block;
+}
