@@ -7,7 +7,7 @@ const ASSETS = {
   startBg: "assets/start_bg.png",
   btnEnter: "assets/btn_enter.png",
   btnHow: "assets/btn_howtoplay.png",
-  mapBg: "assets/map_bg.png",
+  mapBg: "assets/bkg_map.png",
 };
 
 const CHAR_EXT = "png";
