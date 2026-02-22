@@ -36,13 +36,13 @@ const state = {
   soundOn: true,
   step: "start",
 
-  // what they are currently selecting
+  // current selection
   character: { id: "bgnome", color: "red" },
 
-  // what they have CONFIRMED with ✅
+  // confirmed selection (after ✅)
   confirmedCharacter: null,
 
-  // where the character token sits on the map (pixels inside the map box)
+  // token position INSIDE the map box (pixels)
   playerPos: { x: 40, y: 40 },
 };
 
@@ -57,7 +57,6 @@ function loadGame() {
   try {
     const parsed = JSON.parse(saved);
     Object.assign(state, parsed);
-    // safety defaults:
     if (!state.character) state.character = { id:"bgnome", color:"red" };
     if (!state.playerPos) state.playerPos = { x:40, y:40 };
   } catch {}
@@ -74,7 +73,7 @@ function resetGame() {
 }
 
 /* ---------- SOUND ---------- */
-function playClick(); {
+function playClick() {
   if (!state.soundOn) return;
   try {
     const audio = new Audio("data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQgAAAAA");
@@ -127,8 +126,6 @@ function renderHow() {
         <div class="how-title">How to Play</div>
         <p style="margin-top:10px; line-height:1.35;">
           Choose a character, tap ✅ to place them on the map, then click a glowing level circle.
-          <br><br>
-          Later you’ll collect treasures and decorate your forest home.
         </p>
         <button class="how-btn" id="backBtn">Back</button>
       </div>
@@ -142,11 +139,10 @@ function renderHow() {
   };
 }
 
-/* ---------- MAP (CHARACTER + MAP + LEVELS + TOKEN) ---------- */
+/* ---------- MAP WITH CHARACTER PICKER + MAP IMAGE ---------- */
 function renderMap() {
   const def = CHARACTERS.find(c => c.id === state.character.id) || CHARACTERS[0];
 
-  // if saved color isn't valid for that character, pick the first valid one
   if (!def.colors.includes(state.character.color)) {
     state.character.color = def.colors.includes("red") ? "red" : def.colors[0];
   }
@@ -201,50 +197,18 @@ function renderMap() {
           <div class="map-frame" id="mapFrame">
             <img src="assets/bkg_map.png" class="map-img" alt="Forest Map">
 
-<!-- GLOWING LEVEL SPOTS (move these numbers later) -->
-<button class="level-spot" id="lvl1" style="left: 110px; top: 250px;">1</button>
-<button class="level-spot" id="lvl2" style="left: 210px; top: 220px;">2</button>
-<button class="level-spot" id="lvl3" style="left: 310px; top: 190px;">3</button>
-<button class="level-spot" id="lvl4" style="left: 410px; top: 170px;">4</button>
-<button class="level-spot" id="lvl5" style="left: 510px; top: 150px;">5</button>
-<button class="level-spot" id="lvl6" style="left: 610px; top: 130px;">6</button>
+            <!-- 6 LEVELS (placeholder coords - you'll replace using click tool) -->
+            <button class="level-spot" id="lvl1" style="left:110px; top:250px;">1</button>
+            <button class="level-spot" id="lvl2" style="left:210px; top:220px;">2</button>
+            <button class="level-spot" id="lvl3" style="left:310px; top:190px;">3</button>
+            <button class="level-spot" id="lvl4" style="left:410px; top:170px;">4</button>
+            <button class="level-spot" id="lvl5" style="left:510px; top:150px;">5</button>
+            <button class="level-spot" id="lvl6" style="left:610px; top:130px;">6</button>
 
-// --- COORDINATE CLICK TOOL ---
-// Click anywhere on the map to see X/Y coords (relative to the map box)
-const mapFrame = document.getElementById("mapFrame");
-const coordTip = document.getElementById("coordTip");
+            <!-- coordinate label -->
+            <div id="coordTip" class="coord-tip" style="display:none;">x: 0, y: 0</div>
 
-if (mapFrame) {
-  mapFrame.addEventListener("click", (e) => {
-    // Don't trigger when clicking a level spot or the player token
-    const clickedButton = e.target.closest(".level-spot");
-    const clickedToken  = e.target.closest("#playerToken");
-    if (clickedButton || clickedToken) return;
-
-    const rect = mapFrame.getBoundingClientRect();
-    const x = Math.round(e.clientX - rect.left);
-    const y = Math.round(e.clientY - rect.top);
-
-    console.log("MAP COORDS:", x, y);
-
-    if (coordTip) {
-      coordTip.style.display = "block";
-      coordTip.style.left = `${x + 10}px`;
-      coordTip.style.top  = `${y + 10}px`;
-      coordTip.textContent = `x: ${x}, y: ${y}`;
-
-      clearTimeout(window.__coordHideTimer);
-      window.__coordHideTimer = setTimeout(() => {
-        coordTip.style.display = "none";
-      }, 1200);
-    }
-  });
-}
-
-<!-- coordinate tooltip -->
-<div id="coordTip" class="coord-tip" style="display:none;">x: 0, y: 0</div>
-
-            <!-- CHARACTER TOKEN -->
+            <!-- character token -->
             <div id="playerToken" class="player-token" style="display:none;"></div>
           </div>
         </div>
@@ -253,7 +217,7 @@ if (mapFrame) {
     </div>
   `;
 
-  // Home button
+  // Home
   document.getElementById("homeBtn").onclick = () => {
     playClick();
     state.step = "start";
@@ -261,7 +225,7 @@ if (mapFrame) {
     render();
   };
 
-  // Character choose
+  // Character switch
   document.querySelectorAll(".char-card").forEach(btn => {
     btn.onclick = () => {
       playClick();
@@ -271,11 +235,11 @@ if (mapFrame) {
       state.character.color = newDef.colors.includes("red") ? "red" : newDef.colors[0];
 
       saveGame();
-      render(); // re-render so swatches match that character
+      render();
     };
   });
 
-  // Color choose
+  // Color switch
   document.querySelectorAll(".swatch").forEach(btn => {
     btn.onclick = () => {
       playClick();
@@ -285,12 +249,12 @@ if (mapFrame) {
       const big = document.getElementById("bigChar");
       if (big) big.src = `assets/${state.character.id}_${state.character.color}.${CHAR_EXT}`;
 
-      document.querySelectorAll(".swatch").forEach(s => s.classList.remove("active"));
+      document.querySelectorAll(".swatch").forEach(s=>s.classList.remove("active"));
       btn.classList.add("active");
     };
   });
 
-  // Confirm ✅ (locks in character and places token on map)
+  // Confirm ✅
   document.getElementById("confirmBtn").onclick = () => {
     playClick();
     state.confirmedCharacter = { ...state.character };
@@ -298,44 +262,58 @@ if (mapFrame) {
     placeTokenOnMap();
   };
 
-  // Level clicks (move token)
-  document.getElementById("lvl1").onclick = () => {
-    if (!state.confirmedCharacter) return alert("Choose your character and tap ✅ first!");
-    moveTokenTo(110, 250);
-    alert("Level 1 will open next!");
-  };
-  document.getElementById("lvl2").onclick = () => {
-    if (!state.confirmedCharacter) return alert("Choose your character and tap ✅ first!");
-    moveTokenTo(210, 220);
-    alert("Level 2 later!");
-  };
-  document.getElementById("lvl3").onclick = () => {
-    if (!state.confirmedCharacter) return alert("Choose your character and tap ✅ first!");
-    moveTokenTo(310, 190);
-    alert("Level 3 later!");
-  };
-document.getElementById("lvl4").onclick = () => {
-  if (!state.confirmedCharacter) return alert("Choose your character and tap ✅ first!");
-  moveTokenTo(410, 170);
-  alert("Level 4 later!");
-};
+  // Level clicks (moves token)
+  function requireConfirmed() {
+    if (!state.confirmedCharacter) {
+      alert("Choose your character and tap ✅ first!");
+      return false;
+    }
+    return true;
+  }
 
-document.getElementById("lvl5").onclick = () => {
-  if (!state.confirmedCharacter) return alert("Choose your character and tap ✅ first!");
-  moveTokenTo(510, 150);
-  alert("Level 5 later!");
-};
+  document.getElementById("lvl1").onclick = () => { if (!requireConfirmed()) return; moveTokenTo(110,250); };
+  document.getElementById("lvl2").onclick = () => { if (!requireConfirmed()) return; moveTokenTo(210,220); };
+  document.getElementById("lvl3").onclick = () => { if (!requireConfirmed()) return; moveTokenTo(310,190); };
+  document.getElementById("lvl4").onclick = () => { if (!requireConfirmed()) return; moveTokenTo(410,170); };
+  document.getElementById("lvl5").onclick = () => { if (!requireConfirmed()) return; moveTokenTo(510,150); };
+  document.getElementById("lvl6").onclick = () => { if (!requireConfirmed()) return; moveTokenTo(610,130); };
 
-document.getElementById("lvl6").onclick = () => {
-  if (!state.confirmedCharacter) return alert("Choose your character and tap ✅ first!");
-  moveTokenTo(610, 130);
-  alert("Level 6 later!");
-};
   // Show token if already confirmed
   placeTokenOnMap();
+
+  // --- COORDINATE CLICK TOOL ---
+  const mapFrame = document.getElementById("mapFrame");
+  const coordTip = document.getElementById("coordTip");
+
+  if (mapFrame) {
+    mapFrame.addEventListener("click", (e) => {
+      // ignore clicks on level buttons or player token
+      const clickedButton = e.target.closest(".level-spot");
+      const clickedToken  = e.target.closest("#playerToken");
+      if (clickedButton || clickedToken) return;
+
+      const rect = mapFrame.getBoundingClientRect();
+      const x = Math.round(e.clientX - rect.left);
+      const y = Math.round(e.clientY - rect.top);
+
+      console.log("MAP COORDS:", x, y);
+
+      if (coordTip) {
+        coordTip.style.display = "block";
+        coordTip.style.left = (x + 10) + "px";
+        coordTip.style.top  = (y + 10) + "px";
+        coordTip.textContent = "x: " + x + ", y: " + y;
+
+        clearTimeout(window.__coordHideTimer);
+        window.__coordHideTimer = setTimeout(() => {
+          coordTip.style.display = "none";
+        }, 1200);
+      }
+    });
+  }
 }
 
-/* ---------- MAP TOKEN HELPERS ---------- */
+/* ---------- TOKEN HELPERS ---------- */
 function placeTokenOnMap() {
   const token = document.getElementById("playerToken");
   if (!token) return;
@@ -346,11 +324,9 @@ function placeTokenOnMap() {
   }
 
   token.style.display = "grid";
-  token.style.left = `${state.playerPos.x}px`;
-  token.style.top  = `${state.playerPos.y}px`;
-  token.innerHTML = `
-    <img src="assets/${state.confirmedCharacter.id}_${state.confirmedCharacter.color}.${CHAR_EXT}" alt="Player">
-  `;
+  token.style.left = state.playerPos.x + "px";
+  token.style.top  = state.playerPos.y + "px";
+  token.innerHTML = `<img src="assets/${state.confirmedCharacter.id}_${state.confirmedCharacter.color}.${CHAR_EXT}" alt="Player">`;
 }
 
 function moveTokenTo(x, y) {
@@ -359,22 +335,26 @@ function moveTokenTo(x, y) {
   placeTokenOnMap();
 }
 
-/* ---------- TOP BUTTONS ---------- */
-soundBtn.onclick = () => {
-  state.soundOn = !state.soundOn;
-  saveGame();
-  playClick();
-};
-
-saveBtn.onclick = () => {
-  saveGame();
-  playClick();
-  alert("Saved!");
-};
-
-resetBtn.onclick = () => {
-  if (confirm("Reset progress?")) resetGame();
-};
+/* ---------- TOP BUTTONS (GUARDED) ---------- */
+if (soundBtn) {
+  soundBtn.onclick = () => {
+    state.soundOn = !state.soundOn;
+    saveGame();
+    playClick();
+  };
+}
+if (saveBtn) {
+  saveBtn.onclick = () => {
+    saveGame();
+    playClick();
+    alert("Saved!");
+  };
+}
+if (resetBtn) {
+  resetBtn.onclick = () => {
+    if (confirm("Reset progress?")) resetGame();
+  };
+}
 
 /* ---------- INIT ---------- */
 loadGame();
