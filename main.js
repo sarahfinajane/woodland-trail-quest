@@ -7,11 +7,10 @@ const ASSETS = {
   startBg: "assets/start_bg.png",
   btnEnter: "assets/btn_enter.png",
   btnHow: "assets/btn_howtoplay.png",
-  mapBg: "assets/bkg_map.png",
 };
 
 const CHAR_EXT = "png";
-const SAVE_KEY = "woodlandSave_v3";
+const SAVE_KEY = "woodlandSave_v4";
 
 const CHARACTERS = [
   { id: "bgnome",  title: "Gnome Boy",    colors: ["red","orange","yellow","green","blue","purple","black","white"] },
@@ -51,8 +50,7 @@ function loadGame() {
   const saved = localStorage.getItem(SAVE_KEY);
   if (!saved) return;
   try {
-    const parsed = JSON.parse(saved);
-    Object.assign(state, parsed);
+    Object.assign(state, JSON.parse(saved));
   } catch {}
 }
 
@@ -76,10 +74,8 @@ function playClick() {
 /* ---------- ROUTER ---------- */
 function render() {
   if (state.step === "start") return renderStart();
-  if (state.step === "how") return renderHow();
   if (state.step === "map") return renderMap();
-  state.step = "start";
-  renderStart();
+  if (state.step === "how") return renderHow();
 }
 
 /* ---------- START ---------- */
@@ -88,10 +84,10 @@ function renderStart() {
     <div class="start-screen" style="background-image:url('${ASSETS.startBg}')">
       <div class="start-bottom">
         <button class="start-btn" id="enterBtn">
-          <img src="${ASSETS.btnEnter}" alt="Enter">
+          <img src="${ASSETS.btnEnter}">
         </button>
         <button class="start-btn" id="howBtn">
-          <img src="${ASSETS.btnHow}" alt="How">
+          <img src="${ASSETS.btnHow}">
         </button>
       </div>
     </div>
@@ -105,7 +101,6 @@ function renderStart() {
   };
 
   document.getElementById("howBtn").onclick = () => {
-    playClick();
     state.step = "how";
     render();
   };
@@ -118,8 +113,8 @@ function renderHow() {
       <div class="how-overlay"></div>
       <div class="how-card">
         <div class="how-title">How to Play</div>
-        <p>Explore. Click the correct nature items. Collect treasures. Decorate your home.</p>
-        <button id="backBtn" class="how-btn">Back</button>
+        <p>Explore nature. Click the correct items. Collect treasures. Decorate your forest home.</p>
+        <button class="how-btn" id="backBtn">Back</button>
       </div>
     </div>
   `;
@@ -129,7 +124,7 @@ function renderHow() {
   };
 }
 
-/* ---------- MAP ---------- */
+/* ---------- MAP WITH CHARACTER PICKER + MAP IMAGE ---------- */
 function renderMap() {
 
   const def = CHARACTERS.find(c => c.id === state.character.id);
@@ -140,18 +135,13 @@ function renderMap() {
   const bigSrc = `assets/${state.character.id}_${state.character.color}.${CHAR_EXT}`;
 
   screen.innerHTML = `
-    <div class="map-screen" style="background-image:url('${ASSETS.mapBg}')">
-      <div class="map-overlay"></div>
-
-      <div class="map-top">
-        <button id="homeBtn" class="map-pill">← Home</button>
-        <div class="map-title">Forest Map</div>
-        <button id="saveMapBtn" class="map-pill">Save</button>
-      </div>
+    <div class="map-screen">
 
       <div class="map-layout">
 
+        <!-- LEFT PANEL -->
         <div class="panel">
+
           <div class="panel-title">Choose Your Character</div>
 
           <div class="char-grid">
@@ -178,26 +168,21 @@ function renderMap() {
 
         </div>
 
-        <div class="panel map-art-panel">
-  <div class="map-art-container">
-    <img src="assets/bkg_map.png" class="map-art-img" alt="Forest Map">
-  </div>
-</div>
+        <!-- RIGHT PANEL WITH YOUR MAP -->
+        <div class="panel">
+          <div class="panel-title">Forest Map</div>
+          <div class="panel-sub">Click places on the map to choose a trail.</div>
+
+          <div class="map-frame">
+            <img src="assets/bkg_map.png" class="map-img">
+          </div>
+        </div>
 
       </div>
     </div>
   `;
 
-  document.getElementById("homeBtn").onclick = () => {
-    state.step = "start";
-    render();
-  };
-
-  document.getElementById("saveMapBtn").onclick = () => {
-    saveGame();
-    alert("Saved!");
-  };
-
+  // Character switch
   document.querySelectorAll(".char-card").forEach(btn => {
     btn.onclick = () => {
       state.character.id = btn.dataset.id;
@@ -207,29 +192,23 @@ function renderMap() {
     };
   });
 
+  // Color switch
   document.querySelectorAll(".swatch").forEach(btn => {
-  btn.onclick = () => {
-    playClick();
-    state.character.color = btn.dataset.color;
-    saveGame();
-
-    const big = document.getElementById("bigChar");
-    if (big) {
-      big.src = `assets/${state.character.id}_${state.character.color}.${CHAR_EXT}`;
-    }
-
-    // update active ring
-    document.querySelectorAll(".swatch").forEach(s => s.classList.remove("active"));
-    btn.classList.add("active");
-  };
-});
+    btn.onclick = () => {
+      state.character.color = btn.dataset.color;
+      saveGame();
+      document.getElementById("bigChar").src =
+        `assets/${state.character.id}_${state.character.color}.${CHAR_EXT}`;
+      document.querySelectorAll(".swatch").forEach(s=>s.classList.remove("active"));
+      btn.classList.add("active");
+    };
+  });
 }
 
 /* ---------- TOP BUTTONS ---------- */
 soundBtn.onclick = () => {
   state.soundOn = !state.soundOn;
   saveGame();
-  playClick();
 };
 
 saveBtn.onclick = () => {
