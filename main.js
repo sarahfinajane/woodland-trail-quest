@@ -178,10 +178,11 @@ function renderMap() {
 
         </div>
 
-        <div class="panel">
-          <div class="panel-title">Trails</div>
-          <button class="trail-btn">Level 1</button>
-        </div>
+        <div class="panel map-art-panel">
+  <div class="map-art-container">
+    <img src="assets/bkg_map.png" class="map-art-img" alt="Forest Map">
+  </div>
+</div>
 
       </div>
     </div>
