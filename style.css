@@ -40,7 +40,7 @@ body {
 .top-btn:active { transform: translateY(0px); }
 
 .top-btn img {
-  width: 44px;   /* smaller buttons */
+  width: 44px;
   height: auto;
   display: block;
 }
@@ -55,13 +55,13 @@ body {
   position: relative;
 }
 
-/* ---------------- LEVEL COLUMN ---------------- */
-/* Positioned under the green text box area */
+/* ---------------- LEVEL POSITION ---------------- */
+/* EXACT POSITION YOU REQUESTED */
 
 .level-column {
   position: absolute;
-  left: 400px;     /* adjust left/right if needed */
-  top: 320px;     /* adjust up/down if needed */
+  left: 475px;     /* moved toward center */
+  top: 320px;      /* exact height you liked */
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -81,7 +81,7 @@ body {
 .level-btn:active { transform: translateY(0px); }
 
 .level-btn img {
-  width: 150px;   /* good size */
+  width: 150px;
   height: auto;
   display: block;
   border-radius: 18px;
@@ -99,7 +99,7 @@ body {
   gap: 14px;
   align-items: center;
   justify-content: center;
-  flex-wrap: nowrap;   /* forces side-by-side */
+  flex-wrap: nowrap;
   padding: 0 12px;
 }
 
@@ -116,7 +116,7 @@ body {
 .start-btn:active { transform: translateY(0px); }
 
 .start-btn img {
-  width: 200px;     /* smaller so both fit */
+  width: 200px;
   max-width: 40vw;
   height: auto;
   display: block;
@@ -128,8 +128,8 @@ body {
 @media (max-width: 520px) {
 
   .level-column {
-    left: 400px;
-    top: 220px;
+    left: 40px;
+    top: 280px;
   }
 
   .level-btn img {
