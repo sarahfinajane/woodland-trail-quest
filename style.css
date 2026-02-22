@@ -50,11 +50,10 @@ body {
   position: relative;
 }
 
-/* Left column for level buttons (you'll add more later) */
 .level-column {
   position: absolute;
-  left: 18px;
-  top: 110px;
+  left: 90px;      /* move toward center */
+  top: 240px;      /* lower it under the green box */
   display: flex;
   flex-direction: column;
   gap: 12px;
