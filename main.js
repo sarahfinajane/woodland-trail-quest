@@ -207,15 +207,21 @@ function renderMap() {
   });
 
   document.querySelectorAll(".swatch").forEach(btn => {
-    btn.onclick = () => {
-      state.character.color = btn.dataset.color;
-      saveGame();
-      document.getElementById("bigChar").src =
-        `assets/${state.character.id}_${state.character.color}.${CHAR_EXT}`;
-      document.querySelectorAll(".swatch").forEach(s=>s.classList.remove("active"));
-      btn.classList.add("active");
-    };
-  });
+  btn.onclick = () => {
+    playClick();
+    state.character.color = btn.dataset.color;
+    saveGame();
+
+    const big = document.getElementById("bigChar");
+    if (big) {
+      big.src = `assets/${state.character.id}_${state.character.color}.${CHAR_EXT}`;
+    }
+
+    // update active ring
+    document.querySelectorAll(".swatch").forEach(s => s.classList.remove("active"));
+    btn.classList.add("active");
+  };
+});
 }
 
 /* ---------- TOP BUTTONS ---------- */
