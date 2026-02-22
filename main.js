@@ -201,10 +201,48 @@ function renderMap() {
           <div class="map-frame" id="mapFrame">
             <img src="assets/bkg_map.png" class="map-img" alt="Forest Map">
 
-            <!-- GLOWING LEVEL SPOTS (we will move these later) -->
-            <button class="level-spot" id="lvl1" style="left: 110px; top: 250px;">1</button>
-            <button class="level-spot" id="lvl2" style="left: 210px; top: 220px;">2</button>
-            <button class="level-spot" id="lvl3" style="left: 310px; top: 190px;">3</button>
+<!-- GLOWING LEVEL SPOTS (move these numbers later) -->
+<button class="level-spot" id="lvl1" style="left: 110px; top: 250px;">1</button>
+<button class="level-spot" id="lvl2" style="left: 210px; top: 220px;">2</button>
+<button class="level-spot" id="lvl3" style="left: 310px; top: 190px;">3</button>
+<button class="level-spot" id="lvl4" style="left: 410px; top: 170px;">4</button>
+<button class="level-spot" id="lvl5" style="left: 510px; top: 150px;">5</button>
+<button class="level-spot" id="lvl6" style="left: 610px; top: 130px;">6</button>
+
+// --- COORDINATE CLICK TOOL ---
+// Click anywhere on the map to see X/Y coords (relative to the map box)
+const mapFrame = document.getElementById("mapFrame");
+const coordTip = document.getElementById("coordTip");
+
+if (mapFrame) {
+  mapFrame.addEventListener("click", (e) => {
+    // Don't trigger when clicking a level spot or the player token
+    const clickedButton = e.target.closest(".level-spot");
+    const clickedToken  = e.target.closest("#playerToken");
+    if (clickedButton || clickedToken) return;
+
+    const rect = mapFrame.getBoundingClientRect();
+    const x = Math.round(e.clientX - rect.left);
+    const y = Math.round(e.clientY - rect.top);
+
+    console.log("MAP COORDS:", x, y);
+
+    if (coordTip) {
+      coordTip.style.display = "block";
+      coordTip.style.left = `${x + 10}px`;
+      coordTip.style.top  = `${y + 10}px`;
+      coordTip.textContent = `x: ${x}, y: ${y}`;
+
+      clearTimeout(window.__coordHideTimer);
+      window.__coordHideTimer = setTimeout(() => {
+        coordTip.style.display = "none";
+      }, 1200);
+    }
+  });
+}
+
+<!-- coordinate tooltip -->
+<div id="coordTip" class="coord-tip" style="display:none;">x: 0, y: 0</div>
 
             <!-- CHARACTER TOKEN -->
             <div id="playerToken" class="player-token" style="display:none;"></div>
@@ -276,7 +314,23 @@ function renderMap() {
     moveTokenTo(310, 190);
     alert("Level 3 later!");
   };
+document.getElementById("lvl4").onclick = () => {
+  if (!state.confirmedCharacter) return alert("Choose your character and tap ✅ first!");
+  moveTokenTo(410, 170);
+  alert("Level 4 later!");
+};
 
+document.getElementById("lvl5").onclick = () => {
+  if (!state.confirmedCharacter) return alert("Choose your character and tap ✅ first!");
+  moveTokenTo(510, 150);
+  alert("Level 5 later!");
+};
+
+document.getElementById("lvl6").onclick = () => {
+  if (!state.confirmedCharacter) return alert("Choose your character and tap ✅ first!");
+  moveTokenTo(610, 130);
+  alert("Level 6 later!");
+};
   // Show token if already confirmed
   placeTokenOnMap();
 }
