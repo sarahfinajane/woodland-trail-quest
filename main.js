@@ -74,7 +74,7 @@ function resetGame() {
 }
 
 /* ---------- SOUND ---------- */
-function playClick() {
+function playClick(); {
   if (!state.soundOn) return;
   try {
     const audio = new Audio("data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQgAAAAA");
