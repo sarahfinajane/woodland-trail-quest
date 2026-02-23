@@ -198,12 +198,12 @@ function renderMap() {
             <img src="assets/bkg_map.png" class="map-img" alt="Forest Map">
 
             <!-- 6 LEVELS (placeholder coords - you'll replace using click tool) -->
-            <button class="level-spot" id="lvl1" style="left:110px; top:250px;">1</button>
-            <button class="level-spot" id="lvl2" style="left:210px; top:220px;">2</button>
-            <button class="level-spot" id="lvl3" style="left:310px; top:190px;">3</button>
-            <button class="level-spot" id="lvl4" style="left:410px; top:170px;">4</button>
-            <button class="level-spot" id="lvl5" style="left:510px; top:150px;">5</button>
-            <button class="level-spot" id="lvl6" style="left:610px; top:130px;">6</button>
+           <button class="level-spot" id="lvl1" style="left:109px; top:411px;">1</button>
+<button class="level-spot" id="lvl2" style="left:276px; top:429px;">2</button>
+<button class="level-spot" id="lvl3" style="left:354px; top:339px;">3</button>
+<button class="level-spot" id="lvl4" style="left:528px; top:359px;">4</button>
+<button class="level-spot" id="lvl5" style="left:702px; top:283px;">5</button>
+<button class="level-spot" id="lvl6" style="left:845px; top:287px;">6</button>
 
             <!-- coordinate label -->
             <div id="coordTip" class="coord-tip" style="display:none;">x: 0, y: 0</div>
@@ -271,13 +271,12 @@ function renderMap() {
     return true;
   }
 
-  document.getElementById("lvl1").onclick = () => { if (!requireConfirmed()) return; moveTokenTo(110,250); };
-  document.getElementById("lvl2").onclick = () => { if (!requireConfirmed()) return; moveTokenTo(210,220); };
-  document.getElementById("lvl3").onclick = () => { if (!requireConfirmed()) return; moveTokenTo(310,190); };
-  document.getElementById("lvl4").onclick = () => { if (!requireConfirmed()) return; moveTokenTo(410,170); };
-  document.getElementById("lvl5").onclick = () => { if (!requireConfirmed()) return; moveTokenTo(510,150); };
-  document.getElementById("lvl6").onclick = () => { if (!requireConfirmed()) return; moveTokenTo(610,130); };
-
+ document.getElementById("lvl1").onclick = () => { if (!requireConfirmed()) return; moveTokenTo(276,429); };
+document.getElementById("lvl2").onclick = () => { if (!requireConfirmed()) return; moveTokenTo(276,429); };
+document.getElementById("lvl3").onclick = () => { if (!requireConfirmed()) return; moveTokenTo(354,339); };
+document.getElementById("lvl4").onclick = () => { if (!requireConfirmed()) return; moveTokenTo(528,359); };
+document.getElementById("lvl5").onclick = () => { if (!requireConfirmed()) return; moveTokenTo(702,283); };
+document.getElementById("lvl6").onclick = () => { if (!requireConfirmed()) return; moveTokenTo(845,287); };
   // Show token if already confirmed
   placeTokenOnMap();
 
