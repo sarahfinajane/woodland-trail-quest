@@ -198,12 +198,12 @@ function renderMap() {
             <img src="assets/bkg_map.png" class="map-img" alt="Forest Map">
 
             <!-- 6 LEVELS (placeholder coords - you'll replace using click tool) -->
-           <button class="level-spot" id="lvl1" style="left:109px; top:411px;">1</button>
-<button class="level-spot" id="lvl2" style="left:276px; top:429px;">2</button>
-<button class="level-spot" id="lvl3" style="left:354px; top:339px;">3</button>
-<button class="level-spot" id="lvl4" style="left:528px; top:359px;">4</button>
-<button class="level-spot" id="lvl5" style="left:702px; top:283px;">5</button>
-<button class="level-spot" id="lvl6" style="left:845px; top:287px;">6</button>
+           <button class="level-spot" id="lvl1" style="left:100px; top:400px;">1</button>
+<button class="level-spot" id="lvl2" style="left:266px; top:419px;">2</button>
+<button class="level-spot" id="lvl3" style="left:344px; top:329px;">3</button>
+<button class="level-spot" id="lvl4" style="left:518px; top:349px;">4</button>
+<button class="level-spot" id="lvl5" style="left:692px; top:273px;">5</button>
+<button class="level-spot" id="lvl6" style="left:835px; top:277px;">6</button>
 
             <!-- coordinate label -->
             <div id="coordTip" class="coord-tip" style="display:none;">x: 0, y: 0</div>
